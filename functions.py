@@ -22,29 +22,72 @@ def prepare_string(operation):
 
 
 def assign_values(n):
-    proposiciones = [f'p{i + 1}' for i in range(n)]
+    #TODO No usar itertools
     valores_posibles = list(product([0, 1], repeat=n))
-    tabla_verdad = {proposicion: [] for proposicion in proposiciones}
 
     for valores in valores_posibles:
         for i in range(n):
-            tabla_verdad[proposiciones[i]].append(valores[i])
-    i = -1
-    for _, valores in tabla_verdad.items():
-        i += 1
-        letter_values[list(letter_values.keys())[i]] = valores
+            letter_values[list(letter_values.keys())[i]].append(valores[i])
+
     return None
 
 
-def create_dataframe():
-    df = pd.DataFrame(letter_values)
-    return df
-
-
 def calculate_results(operation):
+    partial_result = []
+
+    for operant_index in operations_indexs:
+        if operation[operant_index] in valid_operations[1:]:
+
+            if operation[operant_index] == "&":
+                values1 = letter_values[operation[operant_index - 1]]
+                values2 = letter_values[operation[operant_index + 1]]
+                for i in range(len(values1)):
+                    if values1[i] == 1 and values2[i] == 1:
+                        partial_result.append(1)
+                    else:
+                        partial_result.append(0)
+
+            elif operation[operant_index] == ">":
+                values1 = letter_values[operation[operant_index - 1]]
+                values2 = letter_values[operation[operant_index + 1]]
+                for i in range(len(values1)):
+                    if values1[i] == 1 and values2[i] == 0:
+                        partial_result.append(0)
+                    else:
+                        partial_result.append(1)
+
+            elif operation[operant_index] == "=":
+                values1 = letter_values[operation[operant_index - 1]]
+                values2 = letter_values[operation[operant_index + 1]]
+                for i in range(len(values1)):
+                    if values1[i] == values2[i]:
+                        partial_result.append(1)
+                    else:
+                        partial_result.append(0)
+
+            elif operation[operant_index] == "|":
+                values1 = letter_values[operation[operant_index - 1]]
+                values2 = letter_values[operation[operant_index + 1]]
+                for i in range(len(values1)):
+                    if values1[i] == 1 or values2[i] == 1:
+                        partial_result.append(1)
+                    else:
+                        partial_result.append(0)
+
+    df = pd.DataFrame(letter_values)
+    if len(operation) > 1:
+        df[operation] = None
+
+        for i in range(len(partial_result)):
+            df.loc[i, operation] = partial_result[i]
+
+
+    print(df.to_string(index=False))
+
     return None
 
 
 def delete_values():
     letter_values.clear()
+    operations_indexs.clear()
     return None
