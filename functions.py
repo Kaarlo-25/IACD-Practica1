@@ -6,6 +6,7 @@ operations_indexs = []
 valid_letters = "bcdfghjklmnñpqrstvwxyz"
 letter_values = {}
 
+
 def is_valid(operation):
     return True
 
@@ -22,7 +23,7 @@ def prepare_string(operation):
 
 
 def assign_values(n):
-    #TODO No usar itertools
+    # TODO No usar itertools
     valores_posibles = list(product([0, 1], repeat=n))
 
     for valores in valores_posibles:
@@ -81,13 +82,21 @@ def calculate_results(operation):
         for i in range(len(partial_result)):
             df.loc[i, operation] = partial_result[i]
 
-
-    print(df.to_string(index=False))
-
-    return None
+    return df
 
 
 def delete_values():
     letter_values.clear()
     operations_indexs.clear()
     return None
+
+
+def kind_of_true_table(df):
+    tautologia = all(valor == 1 for valor in df)
+    contradiccion = all(valor == 0 for valor in df)
+    if tautologia:
+        return 'tautologia'
+    if contradiccion:
+        return 'contradiccion'
+    else:
+        return 'contingencia'

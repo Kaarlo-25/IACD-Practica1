@@ -22,7 +22,11 @@ while True:
     if functions.is_valid(operation):
         num_proposicions = functions.prepare_string(operation)
         functions.assign_values(num_proposicions)
-        functions.calculate_results(operation)
+
+        df = functions.calculate_results(operation)
+        print(df.to_string(index=False))
+
+        print(functions.kind_of_true_table(df[operation]))
         functions.delete_values()
     else:
         print("Invalid operation")
