@@ -3,6 +3,7 @@ import pandas as pd
 
 
 valid_operations = ["!", "|", "&", ">", "=", "(", ")"]
+true_false = ["0", "1"]
 operations_indexs = []
 valid_letters = "bcdfghjklmnñpqrstvwxyz"
 letter_values = {}
@@ -33,6 +34,12 @@ def assign_values(n):
 
     return None
 
+def assign_true_false_values(operation):
+    n = len(letter_values.keys())
+    if "0" in operation:
+        letter_values["0"] = [0] * (2**n)
+    if "1" in operation:
+        letter_values["1"] = [1] * (2**n)
 
 def calculate_results(operation, partial_value = None, num = 0):
     if len(operation) == 1 or len(operation) == 2:

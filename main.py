@@ -24,6 +24,7 @@ while True:
     if functions.is_valid(operation):
         num_proposicions = functions.prepare_string(operation)
         functions.assign_values(num_proposicions)
+        functions.assign_true_false_values(operation)
 
         partial_result = functions.calculate_results(operation)
         df = functions.create_dataframe(operation, partial_result)
