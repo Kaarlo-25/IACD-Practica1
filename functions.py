@@ -9,7 +9,6 @@ valid_letters = "bcdfghjklmnñpqrstvwxyz"
 letter_values = {}
 
 
-
 def is_valid(operation):
     return True
 
@@ -42,9 +41,9 @@ def assign_true_false_values(operation):
     if "1" in operation:
         letter_values["1"] = [1] * (2**n)
 
-def calculate_results(operation_string, partial_operation_results = None, num = 0):
+def calculate_results(operation_string, partial_operation_results=None, num=0):
     if len(operation_string) == 1 or len(operation_string) == 2:
-        return None
+        return partial_operation_results
     else:
         new_partial_operation_results = []
         operation_index = operations_indexes_list[0]
@@ -58,15 +57,16 @@ def calculate_results(operation_string, partial_operation_results = None, num = 
             else:
                 proposition2_values = partial_operation_results
 
-        new_partial_operation_results = evaluate_operators(operation_string, operation_index, proposition1_values, proposition2_values, new_partial_operation_results)
+        new_partial_operation_results = evaluate_operators(operation_string, operation_index, proposition1_values,
+                                                           proposition2_values, new_partial_operation_results)
         operations_indexes_list.remove(operation_index)
 
         # TODO recursive function
 
-        partial_operation = 'a'
+        partial_operation = "A"
         partial_operation = partial_operation + operation_string[operation_index + 2:]
         partial_operation = operation_string[:operation_index - 1] + partial_operation
-        return calculate_results(partial_operation, new_partial_operation_results, 2)
+        return calculate_results(partial_operation, new_partial_operation_results, 1)
 
 def evaluate_operators(operation, operation_index, proposition1_values, proposition2_values, partial_values):
     if operation[operation_index] in valid_operations[1:]:
