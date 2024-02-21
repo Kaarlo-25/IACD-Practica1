@@ -1,6 +1,7 @@
 from itertools import product
 import pandas as pd
 
+
 valid_operations = ["!", "|", "&", ">", "=", "(", ")"]
 operations_indexs = []
 valid_letters = "bcdfghjklmnñpqrstvwxyz"
@@ -33,48 +34,60 @@ def assign_values(n):
     return None
 
 
-def calculate_results(operation):
-    partial_result = []
+def calculate_results(operation, partial_value = None, num = 0):
+    if len(operation) == 1 or len(operation) == 2:
+        return None
+    else:
+        partial_values = []
+        operation_index = operations_indexs[0]
 
-    for operant_index in operations_indexs:
-        if operation[operant_index] in valid_operations[1:]:
+        values1 = letter_values[operation[operation_index - 1]]
+        values2 = letter_values[operation[operation_index + 1]]
 
-            if operation[operant_index] == "&":
-                values1 = letter_values[operation[operant_index - 1]]
-                values2 = letter_values[operation[operant_index + 1]]
+        if not partial_value is None:
+            if num == 1:
+                values1 = partial_value
+            else:
+                values2 = partial_value
+
+        if operation[operation_index] in valid_operations[1:]:
+            if operation[operation_index] == "&":
                 for i in range(len(values1)):
                     if values1[i] == 1 and values2[i] == 1:
-                        partial_result.append(1)
+                        partial_values.append(1)
                     else:
-                        partial_result.append(0)
+                        partial_values.append(0)
 
-            elif operation[operant_index] == ">":
-                values1 = letter_values[operation[operant_index - 1]]
-                values2 = letter_values[operation[operant_index + 1]]
-                for i in range(len(values1)):
-                    if values1[i] == 1 and values2[i] == 0:
-                        partial_result.append(0)
-                    else:
-                        partial_result.append(1)
-
-            elif operation[operant_index] == "=":
-                values1 = letter_values[operation[operant_index - 1]]
-                values2 = letter_values[operation[operant_index + 1]]
-                for i in range(len(values1)):
-                    if values1[i] == values2[i]:
-                        partial_result.append(1)
-                    else:
-                        partial_result.append(0)
-
-            elif operation[operant_index] == "|":
-                values1 = letter_values[operation[operant_index - 1]]
-                values2 = letter_values[operation[operant_index + 1]]
+            elif operation[operation_index] == "|":
                 for i in range(len(values1)):
                     if values1[i] == 1 or values2[i] == 1:
-                        partial_result.append(1)
+                        partial_values.append(1)
                     else:
-                        partial_result.append(0)
+                        partial_values.append(0)
 
+            elif operation[operation_index] == ">":
+                for i in range(len(values1)):
+                    if values1[i] == 1 and values2[i] == 0:
+                        partial_values.append(0)
+                    else:
+                        partial_values.append(1)
+
+            elif operation[operation_index] == "=":
+                for i in range(len(values1)):
+                    if values1[i] == values2[i]:
+                        partial_values.append(1)
+                    else:
+                        partial_values.append(0)
+
+            operations_indexs.remove(operation_index)
+
+            partial_operation = 'a'
+            partial_operation = partial_operation + operation[operation_index + 2:]
+            partial_operation = operation[:operation_index - 1] + partial_operation
+        return partial_values
+#calculate_results(partial_operation, partial_values, 0)
+
+def create_dataframe(operation, partial_result):
     df = pd.DataFrame(letter_values)
     if len(operation) > 1:
         df[operation] = None
@@ -95,8 +108,8 @@ def kind_of_true_table(df):
     tautologia = all(valor == 1 for valor in df)
     contradiccion = all(valor == 0 for valor in df)
     if tautologia:
-        return 'tautologia'
+        return "Tautologia"
     if contradiccion:
-        return 'contradiccion'
+        return "Contradiccion"
     else:
-        return 'contingencia'
+        return "Contingencia"

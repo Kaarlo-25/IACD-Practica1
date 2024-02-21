@@ -16,6 +16,8 @@ Trabajo de 10:
     - Hacer trabajo opcional
     - Responder con soltura
 """
+from tabulate import tabulate
+
 import functions
 while True:
     operation = input("\nInsert your operation: \n")
@@ -23,10 +25,11 @@ while True:
         num_proposicions = functions.prepare_string(operation)
         functions.assign_values(num_proposicions)
 
-        df = functions.calculate_results(operation)
-        print(df.to_string(index=False))
+        partial_result = functions.calculate_results(operation)
+        df = functions.create_dataframe(operation, partial_result)
+        print(tabulate(df, headers='keys', tablefmt='fancy_grid', showindex=False))
 
-        print(functions.kind_of_true_table(df[operation]))
+        print(functions.kind_of_true_table(df[operation]) + "\n")
         functions.delete_values()
     else:
         print("Invalid operation")
