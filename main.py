@@ -24,8 +24,8 @@ while True:
     operation = input("\nInsert your operation: \n")
     if functions.is_valid(operation):
         num_proposicions = functions.prepare_dict(operation)
-        functions.assign_values(num_proposicions)
-        functions.assign_true_false_values(operation)
+        functions.assign_propositions_values(num_proposicions)
+        functions.assign_constants_values(operation)
 
         partial_result = functions.calculate_results(operation)
         df = functions.create_dataframe(operation, partial_result)
@@ -34,5 +34,4 @@ while True:
         print(functions.kind_of_true_table(df[operation]) + "\n")
         functions.delete_values()
     else:
-        print("Invalid operation")
         continue
