@@ -13,7 +13,7 @@ def is_valid(operation):
     return True
 
 
-def prepare_string(operation):
+def prepare_dict(operation):
     for letter in operation:
         if letter in valid_letters:
             letter_values[letter] = []
@@ -23,6 +23,13 @@ def prepare_string(operation):
             continue
     return len(letter_values.keys())
 
+def prepare_indexes_list(operation):
+    operations_indexes_list.clear()
+    for letter in operation:
+        if letter in valid_operations:
+            operations_indexes_list.append(operation.index(letter))
+            continue
+    return None
 
 def assign_values(n):
     # TODO No usar itertools
@@ -70,6 +77,7 @@ def calculate_results(operation_string, partial_operation_results=None, num=0):
         partial_operation = "A"
         partial_operation = partial_operation + operation_string[operation_index + 2:]
         partial_operation = operation_string[:operation_index - 1] + partial_operation
+        prepare_indexes_list(partial_operation)
         return calculate_results(partial_operation, new_partial_operation_results, 1)
 
 def evaluate_operators(operation, operation_index, proposition1_values, proposition2_values, partial_values):

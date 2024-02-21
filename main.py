@@ -23,7 +23,7 @@ import functions
 while True:
     operation = input("\nInsert your operation: \n")
     if functions.is_valid(operation):
-        num_proposicions = functions.prepare_string(operation)
+        num_proposicions = functions.prepare_dict(operation)
         functions.assign_values(num_proposicions)
         functions.assign_true_false_values(operation)
 
