@@ -44,19 +44,23 @@ def assign_true_false_values(operation):
 
 def calculate_results(operation_string, partial_operation_results = None, num = 0):
     if len(operation_string) == 1 or len(operation_string) == 2:
-        return None
+        return partial_operation_results
     else:
         new_partial_operation_results = []
         operation_index = operations_indexes_list[0]
-
-        proposition1_values = letter_values[operation_string[operation_index - 1]]
-        proposition2_values = letter_values[operation_string[operation_index + 1]]
+        proposition1_values = []
+        proposition2_values = []
 
         if not partial_operation_results is None:
             if num == 1:
                 proposition1_values = partial_operation_results
+                proposition2_values = letter_values[operation_string[operation_index + 1]]
             else:
+                proposition1_values = letter_values[operation_string[operation_index - 1]]
                 proposition2_values = partial_operation_results
+        else:
+            proposition1_values = letter_values[operation_string[operation_index - 1]]
+            proposition2_values = letter_values[operation_string[operation_index + 1]]
 
         new_partial_operation_results = evaluate_operators(operation_string, operation_index, proposition1_values, proposition2_values, new_partial_operation_results)
         operations_indexes_list.remove(operation_index)
@@ -66,7 +70,7 @@ def calculate_results(operation_string, partial_operation_results = None, num = 
         partial_operation = 'a'
         partial_operation = partial_operation + operation_string[operation_index + 2:]
         partial_operation = operation_string[:operation_index - 1] + partial_operation
-        return calculate_results(partial_operation, new_partial_operation_results, 2)
+        return calculate_results(partial_operation, new_partial_operation_results, 1)
 
 def evaluate_operators(operation, operation_index, proposition1_values, proposition2_values, partial_values):
     if operation[operation_index] in valid_operations[1:]:
