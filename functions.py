@@ -18,10 +18,9 @@ def prepare_dict(operation):
         if letter in valid_letters:
             letter_values[letter] = []
             continue
-        if letter in valid_operations:
-            operations_indexes_list.append(operation.index(letter))
-            continue
+    prepare_indexes_list(operation)
     return len(letter_values.keys())
+
 
 def prepare_indexes_list(operation):
     operations_indexes_list.clear()
@@ -30,6 +29,7 @@ def prepare_indexes_list(operation):
             operations_indexes_list.append(operation.index(letter))
             continue
     return None
+
 
 def assign_values(n):
     # TODO No usar itertools
@@ -41,12 +41,14 @@ def assign_values(n):
 
     return None
 
+
 def assign_true_false_values(operation):
     n = len(letter_values.keys())
     if "0" in operation:
-        letter_values["0"] = [0] * (2**n)
+        letter_values["0"] = [0] * (2 ** n)
     if "1" in operation:
-        letter_values["1"] = [1] * (2**n)
+        letter_values["1"] = [1] * (2 ** n)
+
 
 def calculate_results(operation_string, partial_operation_results=None, num=0):
     if len(operation_string) == 1 or len(operation_string) == 2:
@@ -57,7 +59,7 @@ def calculate_results(operation_string, partial_operation_results=None, num=0):
         proposition1_values = []
         proposition2_values = []
 
-        if not partial_operation_results is None:
+        if partial_operation_results is not None:
             if num == 1:
                 proposition1_values = partial_operation_results
                 proposition2_values = letter_values[operation_string[operation_index + 1]]
@@ -77,8 +79,10 @@ def calculate_results(operation_string, partial_operation_results=None, num=0):
         partial_operation = "A"
         partial_operation = partial_operation + operation_string[operation_index + 2:]
         partial_operation = operation_string[:operation_index - 1] + partial_operation
+
         prepare_indexes_list(partial_operation)
         return calculate_results(partial_operation, new_partial_operation_results, 1)
+
 
 def evaluate_operators(operation, operation_index, proposition1_values, proposition2_values, partial_values):
     if operation[operation_index] in valid_operations[1:]:
