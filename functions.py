@@ -133,9 +133,9 @@ def delete_values():
     return None
 
 
-def kind_of_true_table(df):
-    tautologia = all(valor == 1 for valor in df)
-    contradiccion = all(valor == 0 for valor in df)
+def kind_of_true_table(df_last_column):
+    tautologia = all(valor == 1 for valor in df_last_column)
+    contradiccion = all(valor == 0 for valor in df_last_column)
     if tautologia:
         return "Tautologia"
     if contradiccion:

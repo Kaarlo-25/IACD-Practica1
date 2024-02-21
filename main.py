@@ -20,6 +20,19 @@ Trabajo de 10:
 from tabulate import tabulate
 
 import functions
+print("Program starting...")
+print("This program is designed to evaluates all possible well-formed-formulas of order zero propositional logic. \n")
+print("All propositional formulas must be well-formed. No vowels, no digits, no punctuation, etc... \n"
+      "No other characters than consonants in lower case, the operators and 0's or 1's, which are the values False and True respectively.\n")
+
+print("--Operators:\n"
+      "Negation --> !\n"
+      "Conjuction --> &\n"
+      "Disjunction --> |\n"
+      "Implication --> >\n"
+      "Bicondicional --> =\n")
+
+
 while True:
     operation = input("\nInsert your operation: \n")
     if functions.is_valid(operation):
