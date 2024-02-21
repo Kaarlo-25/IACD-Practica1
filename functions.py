@@ -4,9 +4,10 @@ import pandas as pd
 
 valid_operations = ["!", "|", "&", ">", "=", "(", ")"]
 true_false = ["0", "1"]
-operations_indexs = []
+operations_indexes_list = []
 valid_letters = "bcdfghjklmnñpqrstvwxyz"
 letter_values = {}
+
 
 
 def is_valid(operation):
@@ -19,7 +20,7 @@ def prepare_string(operation):
             letter_values[letter] = []
             continue
         if letter in valid_operations:
-            operations_indexs.append(operation.index(letter))
+            operations_indexes_list.append(operation.index(letter))
             continue
     return len(letter_values.keys())
 
@@ -41,58 +42,63 @@ def assign_true_false_values(operation):
     if "1" in operation:
         letter_values["1"] = [1] * (2**n)
 
-def calculate_results(operation, partial_value = None, num = 0):
-    if len(operation) == 1 or len(operation) == 2:
+def calculate_results(operation_string, partial_operation_results = None, num = 0):
+    if len(operation_string) == 1 or len(operation_string) == 2:
         return None
     else:
-        partial_values = []
-        operation_index = operations_indexs[0]
+        new_partial_operation_results = []
+        operation_index = operations_indexes_list[0]
 
-        values1 = letter_values[operation[operation_index - 1]]
-        values2 = letter_values[operation[operation_index + 1]]
+        proposition1_values = letter_values[operation_string[operation_index - 1]]
+        proposition2_values = letter_values[operation_string[operation_index + 1]]
 
-        if not partial_value is None:
+        if not partial_operation_results is None:
             if num == 1:
-                values1 = partial_value
+                proposition1_values = partial_operation_results
             else:
-                values2 = partial_value
+                proposition2_values = partial_operation_results
 
-        if operation[operation_index] in valid_operations[1:]:
-            if operation[operation_index] == "&":
-                for i in range(len(values1)):
-                    if values1[i] == 1 and values2[i] == 1:
-                        partial_values.append(1)
-                    else:
-                        partial_values.append(0)
+        new_partial_operation_results = evaluate_operators(operation_string, operation_index, proposition1_values, proposition2_values, new_partial_operation_results)
+        operations_indexes_list.remove(operation_index)
 
-            elif operation[operation_index] == "|":
-                for i in range(len(values1)):
-                    if values1[i] == 1 or values2[i] == 1:
-                        partial_values.append(1)
-                    else:
-                        partial_values.append(0)
+        # TODO recursive function
 
-            elif operation[operation_index] == ">":
-                for i in range(len(values1)):
-                    if values1[i] == 1 and values2[i] == 0:
-                        partial_values.append(0)
-                    else:
-                        partial_values.append(1)
+        partial_operation = 'a'
+        partial_operation = partial_operation + operation_string[operation_index + 2:]
+        partial_operation = operation_string[:operation_index - 1] + partial_operation
+        return calculate_results(partial_operation, new_partial_operation_results, 2)
 
-            elif operation[operation_index] == "=":
-                for i in range(len(values1)):
-                    if values1[i] == values2[i]:
-                        partial_values.append(1)
-                    else:
-                        partial_values.append(0)
+def evaluate_operators(operation, operation_index, proposition1_values, proposition2_values, partial_values):
+    if operation[operation_index] in valid_operations[1:]:
+        if operation[operation_index] == "&":
+            for i in range(len(proposition1_values)):
+                if proposition1_values[i] == 1 and proposition2_values[i] == 1:
+                    partial_values.append(1)
+                else:
+                    partial_values.append(0)
 
-            operations_indexs.remove(operation_index)
+        elif operation[operation_index] == "|":
+            for i in range(len(proposition1_values)):
+                if proposition1_values[i] == 1 or proposition2_values[i] == 1:
+                    partial_values.append(1)
+                else:
+                    partial_values.append(0)
 
-            partial_operation = 'a'
-            partial_operation = partial_operation + operation[operation_index + 2:]
-            partial_operation = operation[:operation_index - 1] + partial_operation
-        return partial_values
-#calculate_results(partial_operation, partial_values, 0)
+        elif operation[operation_index] == ">":
+            for i in range(len(proposition1_values)):
+                if proposition1_values[i] == 1 and proposition2_values[i] == 0:
+                    partial_values.append(0)
+                else:
+                    partial_values.append(1)
+
+        elif operation[operation_index] == "=":
+            for i in range(len(proposition1_values)):
+                if proposition1_values[i] == proposition2_values[i]:
+                    partial_values.append(1)
+                else:
+                    partial_values.append(0)
+    return partial_values
+
 
 def create_dataframe(operation, partial_result):
     df = pd.DataFrame(letter_values)
@@ -107,7 +113,7 @@ def create_dataframe(operation, partial_result):
 
 def delete_values():
     letter_values.clear()
-    operations_indexs.clear()
+    operations_indexes_list.clear()
     return None
 
 

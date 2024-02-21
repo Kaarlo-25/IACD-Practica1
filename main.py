@@ -16,6 +16,7 @@ Trabajo de 10:
     - Hacer trabajo opcional
     - Responder con soltura
 """
+
 from tabulate import tabulate
 
 import functions
