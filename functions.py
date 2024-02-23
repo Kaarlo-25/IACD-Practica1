@@ -125,7 +125,8 @@ def eliminates_unnecessary_keys():
     for key in list(letter_values.keys()):
         try:
             if int(key).is_integer():
-                del letter_values[key]
+                if int(key) != 0 or int(key) != 1:
+                    del letter_values[key]
         except ValueError:
             continue
 
