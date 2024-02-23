@@ -32,7 +32,7 @@ def prepare_indexes_list(operation):
     implications_bi = []
     for letter in operation:
         if letter in valid_operations:
-            if letter == "!":
+            if letter == "!" and operation[operation.index(letter) + 1] not in valid_letters:
                 negations.append(operation.index(letter))
             elif letter == "&" or letter == "|":
                 dis_conjuctions.append(operation.index(letter))
@@ -76,8 +76,6 @@ def calculate_results(operation_string, particial_operation_id=2, partial_operat
 
         new_partial_operation_results = evaluate_operators(operation_string, operation_index, proposition1_values,
                                                            proposition2_values, new_partial_operation_results)
-
-        # TODO recursive function
 
         partial_operation = str(particial_operation_id)
         letter_values[partial_operation] = new_partial_operation_results
@@ -131,8 +129,20 @@ def eliminates_unnecessary_keys():
             continue
 
 
+def change_negated_propositions_keys():
+    for key in list(letter_values.keys()):
+        try:
+            if key.isupper():
+                value = letter_values[key]
+                del letter_values[key]
+                letter_values["!" + key.lower()] = value
+        except:
+            continue
+
+
 def create_dataframe(operation, partial_result):
     eliminates_unnecessary_keys()
+    change_negated_propositions_keys()
     df = pd.DataFrame(letter_values)
     if len(operation) > 2:
         df[operation] = None
@@ -159,3 +169,29 @@ def kind_of_true_table(df_last_column):
         return "Contradiccion"
     else:
         return "Contingencia"
+
+
+def negate_values(values):
+    for i in range(len(values)):
+        if values[i] == 0:
+            values[i] = 1
+        else:
+            values[i] = 0
+    return values
+
+
+def rewrite_propositions_negations(operation):
+    new_operation = operation
+
+    i = 0
+    while i < len(new_operation):
+        if new_operation[i] == "!" and i + 1 < len(new_operation):
+            negated_letters.append(new_operation.index(new_operation[i + 1]))
+            values = copy.deepcopy(letter_values[new_operation[i + 1]])
+            letter_values[new_operation[i + 1].capitalize()] = negate_values(values)
+            new_operation = new_operation[:i] + new_operation[i + 1].capitalize() + new_operation[i + 2:]
+            prepare_indexes_list(new_operation)
+            i += 1
+        i += 1
+
+    return new_operation
