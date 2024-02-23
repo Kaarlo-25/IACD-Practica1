@@ -63,7 +63,7 @@ def assign_true_false_values(operation):
         letter_values["1"] = [1] * (2 ** n)
 
 
-def calculate_results(operation_string, particial_operation_id=1, partial_operation_results=None):
+def calculate_results(operation_string, particial_operation_id=2, partial_operation_results=None):
     particial_operation_id += 1
     if len(operation_string) == 1 or len(operation_string) == 2:
         return partial_operation_results
@@ -125,7 +125,7 @@ def eliminates_unnecessary_keys():
     for key in list(letter_values.keys()):
         try:
             if int(key).is_integer():
-                if int(key) != 0 or int(key) != 1:
+                if int(key) != 0 and int(key) != 1:
                     del letter_values[key]
         except ValueError:
             continue
