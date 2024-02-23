@@ -1,11 +1,14 @@
 from itertools import product
 import pandas as pd
+import copy
 
+import functions
 
 valid_operations = ["!", "|", "&", ">", "=", "(", ")"]
 true_false = ["0", "1"]
 operations_indexes_list = []
 valid_letters = "bcdfghjklmnñpqrstvwxyz"
+negated_letters = []
 letter_values = {}
 
 
@@ -24,10 +27,20 @@ def prepare_dict(operation):
 
 def prepare_indexes_list(operation):
     operations_indexes_list.clear()
+    negations = []
+    dis_conjuctions = []
+    implications_bi = []
     for letter in operation:
         if letter in valid_operations:
-            operations_indexes_list.append(operation.index(letter))
-            continue
+            if letter == "!":
+                negations.append(operation.index(letter))
+            elif letter == "&" or letter == "|":
+                dis_conjuctions.append(operation.index(letter))
+            else:
+                implications_bi.append(operation.index(letter))
+    indexes_list = negations + dis_conjuctions + implications_bi
+    functions.operations_indexes_list = copy.deepcopy(indexes_list)
+
     return None
 
 
@@ -50,38 +63,30 @@ def assign_true_false_values(operation):
         letter_values["1"] = [1] * (2 ** n)
 
 
-def calculate_results(operation_string, partial_operation_results=None, num=0):
+def calculate_results(operation_string, particial_operation_id=1, partial_operation_results=None):
+    particial_operation_id += 1
     if len(operation_string) == 1 or len(operation_string) == 2:
         return partial_operation_results
     else:
         new_partial_operation_results = []
         operation_index = operations_indexes_list[0]
-        proposition1_values = []
-        proposition2_values = []
 
-        if partial_operation_results is not None:
-            if num == 1:
-                proposition1_values = partial_operation_results
-                proposition2_values = letter_values[operation_string[operation_index + 1]]
-            else:
-                proposition1_values = letter_values[operation_string[operation_index - 1]]
-                proposition2_values = partial_operation_results
-        else:
-            proposition1_values = letter_values[operation_string[operation_index - 1]]
-            proposition2_values = letter_values[operation_string[operation_index + 1]]
+        proposition1_values = letter_values[operation_string[operation_index - 1]]
+        proposition2_values = letter_values[operation_string[operation_index + 1]]
 
         new_partial_operation_results = evaluate_operators(operation_string, operation_index, proposition1_values,
                                                            proposition2_values, new_partial_operation_results)
-        operations_indexes_list.remove(operation_index)
 
         # TODO recursive function
 
-        partial_operation = "A"
+        partial_operation = str(particial_operation_id)
+        letter_values[partial_operation] = new_partial_operation_results
+
         partial_operation = partial_operation + operation_string[operation_index + 2:]
         partial_operation = operation_string[:operation_index - 1] + partial_operation
 
         prepare_indexes_list(partial_operation)
-        return calculate_results(partial_operation, new_partial_operation_results, 1)
+        return calculate_results(partial_operation, particial_operation_id, new_partial_operation_results)
 
 
 def evaluate_operators(operation, operation_index, proposition1_values, proposition2_values, partial_values):
@@ -116,9 +121,19 @@ def evaluate_operators(operation, operation_index, proposition1_values, proposit
     return partial_values
 
 
+def eliminates_unnecessary_keys():
+    for key in list(letter_values.keys()):
+        try:
+            if int(key).is_integer():
+                del letter_values[key]
+        except ValueError:
+            continue
+
+
 def create_dataframe(operation, partial_result):
+    eliminates_unnecessary_keys()
     df = pd.DataFrame(letter_values)
-    if len(operation) > 1:
+    if len(operation) > 2:
         df[operation] = None
 
         for i in range(len(partial_result)):
@@ -130,6 +145,7 @@ def create_dataframe(operation, partial_result):
 def delete_values():
     letter_values.clear()
     operations_indexes_list.clear()
+    negated_letters.clear()
     return None
 
 
