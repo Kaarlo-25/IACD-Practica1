@@ -34,17 +34,25 @@ print("--Operators:\n"
       "Implication --> >\n"
       "Bicondicional --> =\n")
 
+print("If you want to close the programm, enter \"exit\".")
+
 
 while True:
     operation = input("\nInsert your operation: \n")
-    operation = operation.replace(" ", "").replace("\n", "")
+    if operation == "exit":
+        break
+    operation = operation.replace(" ", "").replace("\n", "").replace("\t", "")
     if functions.is_valid(operation):
         num_proposicions = functions.prepare_dict(operation)
         functions.assign_values(num_proposicions)
         functions.assign_true_false_values(operation)
         operation_with_capital_letters = functions.rewrite_propositions_negations(operation)
+        functions.preapre_parentheses_indexes(operation_with_capital_letters)
+        operation_without_parenthesis, partial_operation_id = functions.evaluates_parenthesis(operation_with_capital_letters)
+        print(f'Result antes del calculate_results (Main): {operation_without_parenthesis}')
 
-        partial_result = functions.calculate_results(operation_with_capital_letters)
+        partial_result = functions.calculate_results(operation_without_parenthesis, partial_operation_id)
+        print(f'Result antes del dataframe: {partial_result}')
         df = functions.create_dataframe(operation, partial_result)
         print(tabulate(df, headers='keys', tablefmt='fancy_grid', showindex=False))
 
