@@ -3,39 +3,62 @@ import pandas as pd
 
 valid_letters = "bcdfghjklmnñpqrstvwxyz"
 valid_operations = ["!", "|", "&", ">", "="]
-constants = ["0", "1"]
-valid_characters = valid_letters + "!" + "|" + "&" + ">" + "=" + "(" + ")" + "0" + "1" + " "
+true_false = ["0", "1"]
+valid_characters = valid_letters + "!|&>=()01" + " "
 operations_indexes_list = []
 letter_values = {}
 
 
 def is_valid(operation_string):
-    open_parenthesis_counter = 0
-    close_parenthesis_counter = 0
-    if operation_string[-1] in valid_operations:
+    if operation_string[-1] in valid_operations or operation_string[0] in valid_operations[1:]: #q|p! and &p|q
         print("Invalid operators.")
         return False
-    if operation_string[0] in valid_operations[1:]:
-        print("Invalid operators.")
+    if not parenthesis_validation(operation_string):
+        print("Invalid parenthesis.")
         return False
     for i in range(len(operation_string)):
-        if operation_string[i] not in valid_characters:
-            print("Invalid character detected.\n")
+        if operation_string[i] not in valid_characters: # solo acepta las letras y operadores adecuados
+            print("Invalid ]character detected.\n")
             return False
-        if operation_string[i] == "(":
-            open_parenthesis_counter += 1
-        if operation_string[i] == ")":
-            close_parenthesis_counter += 1
         if i > 0:
+            if operation_string[i] in valid_letters and operation_string[i - 1] in valid_letters:    # pq
+                print("Invalid operation.\n")
+                return False
             if operation_string[i] in valid_operations and operation_string[i - 1] in valid_operations:
-                if operation_string[i] not in valid_operations[1:] or operation_string[i + 1] != "!":
+                if operation_string[i] in valid_operations[1:] and operation_string[i - 1] != "!": #p!&k
                     print("Invalid operators.")
                     return False
-    if open_parenthesis_counter != close_parenthesis_counter:
-        print("Missing a parenthesis.")
-        return False
+                if operation_string[i] in valid_operations[1:] and operation_string[i - 1] in valid_operations[1:]: #p&|k
+                    print("Invalid operators.")
+                    return False
     print("Valid operators.\n")
     return True
+
+
+def parenthesis_validation(operation_string):
+    stack = []
+    mapping = {")": "("}
+    for i in range(len(operation_string)):
+        if operation_string[i] == ")":
+            if stack:
+                if i - stack[-1][1] == 1 or i - stack[-1][1] == 2:
+                    print("Error at:", stack[-1][1])
+                    return False
+                if ((operation_string[stack[-1][1]-1] not in valid_operations) or
+                    (stack[-1][1] == 0) or
+                    (operation_string[stack[-1][1] + 1] not in valid_characters[:23])):
+                    print("Error at:", stack[-1][1])
+                    return False
+                else:
+                    top_element = stack.pop()
+            else:
+                return False
+            if mapping[operation_string[i]] != top_element[0]:
+                print("Error at:", stack[-1][1])
+                return False
+        if operation_string[i] == "(":
+            stack.append((operation_string[i], i))
+    return not stack
 
 
 def prepare_operators_indexes_list(operation_string):
