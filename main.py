@@ -44,7 +44,7 @@ while True:
         df = functions.create_dataframe(operation_string, partial_result)
         print(tabulate(df, headers='keys', tablefmt='fancy_grid', showindex=False))
 
-        print(functions.kind_of_true_table(df[operation_string]) + "\n")
+        print(functions.type_of_truth_table(df[operation_string]) + "\n")
         functions.delete_values()
         continue
     else:

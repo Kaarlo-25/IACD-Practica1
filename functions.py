@@ -11,6 +11,11 @@ proposition_values = {}
 
 
 def is_valid(operation_string):
+    """
+    :param operation_string: operation introduced by the user
+    :return: True if the operation introduced by the user is well-formed otherwise, it returns False.
+    """
+
     if operation_string[-1] in valid_operators or operation_string[0] in valid_operators[1:]:  # q|p! and &p|q
         print("Invalid operators.")
         return False
@@ -39,6 +44,11 @@ def is_valid(operation_string):
 
 
 def parentheses_validation(operation_string):
+    """
+    :param operation_string: operation introduced by the user.
+    :return: True if the syntax of the parentheses detected in the operation_string is right by the rules of a
+             well-formed operation.
+    """
     stack = []
     mapping = {")": "("}
     for i in range(len(operation_string)):
@@ -65,6 +75,10 @@ def parentheses_validation(operation_string):
 
 
 def prepare_dict(operation_string):
+    """
+    :param operation_string: operation introduced by the user.
+    :return:
+    """
     for letter in operation_string:
         if letter in valid_proposition_letters:
             proposition_values[letter] = []
@@ -74,6 +88,10 @@ def prepare_dict(operation_string):
 
 
 def prepare_operators_indexes_list(operation_string):
+    """
+    :param operation_string: operation introduced by the user.
+    :return:
+    """
     global operators_indexes_list
     operators_indexes_list.clear()
     negations = []
@@ -107,6 +125,10 @@ def assign_values(n):
 
 
 def assign_constants_values(operation_string):
+    """
+    :param operation_string: operation introduced by the user.
+    :return:
+    """
     n = len(proposition_values.keys())
     if "0" in operation_string:
         proposition_values["0"] = [0] * (2 ** n)
@@ -115,6 +137,12 @@ def assign_constants_values(operation_string):
 
 
 def calculate_results(operation_string, partial_operation_id=1, partial_operation_results=None):
+    """
+    :param operation_string: operation introduced by the user.
+    :param partial_operation_id: number that substitutes the expression of an operation between parentheses
+    :param partial_operation_results: results of the operation between parentheses
+    :return:
+    """
     partial_operation_id += 1
     if len(operation_string) == 1 or len(operation_string) == 2:
         if not operation_string.isnumeric():
@@ -147,6 +175,14 @@ def calculate_results(operation_string, partial_operation_id=1, partial_operatio
 
 
 def evaluate_operators(operation_string, operator_index, proposition1_values, proposition2_values, partial_values):
+    """
+    :param operation_string: operation introduced by the user.
+    :param operator_index: index where the operator is in the operation_string
+    :param proposition1_values:
+    :param proposition2_values:
+    :param partial_values:
+    :return:
+    """
     if operation_string[operator_index] in valid_operators[1:]:
         if operation_string[operator_index] == "&":
             for i in range(len(proposition1_values)):
@@ -179,6 +215,9 @@ def evaluate_operators(operation_string, operator_index, proposition1_values, pr
 
 
 def eliminates_unnecessary_keys():
+    """
+    Eliminates unnecessary keys from the hashmap proposition_values
+    """
     for key in list(proposition_values.keys()):
         try:
             if int(key).is_integer():
@@ -189,6 +228,9 @@ def eliminates_unnecessary_keys():
 
 
 def change_negated_propositions_keys():
+    """
+
+    """
     for key in list(proposition_values.keys()):
         try:
             if key.isupper():
@@ -200,6 +242,11 @@ def change_negated_propositions_keys():
 
 
 def create_dataframe(operation_string, partial_result):
+    """
+    :param operation_string: operation introduced by the user.
+    :param partial_result: results of the operation between parentheses
+    :return: dataframe with all propositions, its values and the result of the operation_string with its values
+    """
     eliminates_unnecessary_keys()
     change_negated_propositions_keys()
     df = pd.DataFrame(proposition_values)
@@ -213,12 +260,19 @@ def create_dataframe(operation_string, partial_result):
 
 
 def delete_values():
+    """
+    Cleans all the data used, so the next time a new operation is introduced, everything is empty
+    """
     proposition_values.clear()
     operators_indexes_list.clear()
     multiple_negated_propositions.clear()
 
 
-def kind_of_true_table(df_last_column):
+def type_of_truth_table(df_last_column):
+    """
+    :param df_last_column: the results of the whole operation
+    :return: the classification of the operation
+    """
     tautologia = all(valor == 1 for valor in df_last_column)
     contradiccion = all(valor == 0 for valor in df_last_column)
     if tautologia:
@@ -230,6 +284,10 @@ def kind_of_true_table(df_last_column):
 
 
 def negate_values(values):
+    """
+    :param values: values to be negated(!)
+    :return: negated values of the operation needed
+    """
     for i in range(len(values)):
         if values[i] == 0:
             values[i] = 1
@@ -239,6 +297,10 @@ def negate_values(values):
 
 
 def rewrite_propositions_negations(operation_string):
+    """
+    :param operation_string: operation introduced by the user.
+    :return:
+    """
     new_operation = operation_string
     i = 0
 
@@ -261,6 +323,10 @@ def rewrite_propositions_negations(operation_string):
 
 
 def evaluates_parenthesis(operation_string):
+    """
+    :param operation_string: operation introduced by the user.
+    :return:
+    """
     global parentheses_indexes_list
     i = -1
     partial_operation_id = 2
@@ -307,6 +373,10 @@ def evaluates_parenthesis(operation_string):
 
 
 def prepare_parentheses_indexes(operation: str):
+    """
+    :param operation:
+    :return:
+    """
     global parentheses_indexes_list
     stack = []
     result = []
